@@ -34,15 +34,19 @@ jobs:
 
     - name: Publish to GitHub Packages
       run: |
+        # Сначала собираем проект
+        ./gradlew build
+
+        # Затем публикуем готовый JAR файл
         cat > init-publish.gradle << 'EOF'
         allprojects {
             apply plugin: 'maven-publish'
 
-            // Для Spring Boot projects публикуем JAR
             publishing {
                 publications {
                     mavenJava(MavenPublication) {
-                        artifact tasks.named('bootJar')
+                        // Используем уже собранный JAR файл
+                        artifact file("$project.buildDir/libs/hactions-0.0.1-SNAPSHOT.jar")
                         groupId = 'org.example'
                         artifactId = 'hactions'
                         version = '0.0.1-SNAPSHOT'
