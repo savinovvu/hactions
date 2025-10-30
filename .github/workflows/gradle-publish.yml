@@ -42,12 +42,7 @@ jobs:
             publishing {
                 publications {
                     mavenJava(MavenPublication) {
-                        // Для Spring Boot используем bootJar или jar task
-                        if (project.plugins.hasPlugin('org.springframework.boot')) {
-                            artifact tasks.named('bootJar')
-                        } else {
-                            from components.java
-                        }
+                        artifact tasks.named('bootJar')
                         groupId = 'org.example'
                         artifactId = 'hactions'
                         version = '0.0.1-SNAPSHOT'
