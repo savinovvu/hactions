@@ -32,41 +32,29 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
 
-    - name: Publish to GitHub Packages
-      run: |
-        # Сначала собираем проект
-        ./gradlew build
+ - name: Extract metadata for Docker
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ghcr.io/${{ github.repository }}/hactions
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=sha,prefix={{branch}}-
 
-        # Затем публикуем готовый JAR файл
-        cat > init-publish.gradle << 'EOF'
-        allprojects {
-            apply plugin: 'maven-publish'
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
-            publishing {
-                publications {
-                    mavenJava(MavenPublication) {
-                        // Используем уже собранный JAR файл
-                        artifact file("$project.buildDir/libs/hactions-0.0.1-SNAPSHOT.jar")
-                        groupId = 'org.example'
-                        artifactId = 'hactions'
-                        version = '0.0.1-SNAPSHOT'
-                    }
-                }
-                repositories {
-                    maven {
-                        name = "GitHubPackages"
-                        url = uri("https://maven.pkg.github.com/${{ github.repository }}")
-                        credentials {
-                            username = System.getenv("USERNAME")
-                            password = System.getenv("TOKEN")
-                        }
-                    }
-                }
-            }
-        }
-        EOF
-
-        ./gradlew publish --init-script init-publish.gradle
-      env:
-        USERNAME: ${{ github.actor }}
-        TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
