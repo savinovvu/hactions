@@ -37,10 +37,36 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
 
-    # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
-    # the publishing section of your build.gradle
     - name: Publish to GitHub Packages
-      run: ./gradlew publish
+      run: |
+        cat > init-publish.gradle << 'EOF'
+        allprojects {
+            apply plugin: 'maven-publish'
+
+            publishing {
+                publications {
+                    mavenJava(MavenPublication) {
+                        from components.java
+                        groupId = 'org.example'
+                        artifactId = 'hactions'
+                        version = '0.0.1-SNAPSHOT'
+                    }
+                }
+                repositories {
+                    maven {
+                        name = "GitHubPackages"
+                        url = uri("https://maven.pkg.github.com/${{ github.repository }}")
+                        credentials {
+                            username = System.getenv("USERNAME")
+                            password = System.getenv("TOKEN")
+                        }
+                    }
+                }
+            }
+        }
+        EOF
+
+        ./gradlew publish --init-script init-publish.gradle
       env:
         USERNAME: ${{ github.actor }}
         TOKEN: ${{ secrets.GITHUB_TOKEN }}
