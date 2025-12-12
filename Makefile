@@ -1,35 +1,35 @@
 .PHONY: lint template test package install upgrade uninstall
 
 CHART_NAME = hello-spring-app
+CHART_PATH = helm/$(CHART_NAME)
 RELEASE_NAME = my-app
-NAMESPACE = default
+NAMESPACE = ufr-uspil2-copy1
 
 lint:
-	helm lint ./$(CHART_NAME)
+	helm lint ./$(CHART_PATH)
 
 template:
-	helm template $(RELEASE_NAME) ./$(CHART_NAME) --namespace $(NAMESPACE)
+	helm template $(RELEASE_NAME) ./$(CHART_PATH) --namespace $(NAMESPACE)
 
 test:
 	helm test $(RELEASE_NAME) --namespace $(NAMESPACE)
 
 package:
-	helm package ./$(CHART_NAME)
+	helm package ./$(CHART_PATH)  # Создаст пакет в текущей директории
 
 install:
-	helm install $(RELEASE_NAME) ./$(CHART_NAME) --namespace $(NAMESPACE)
+	helm install $(RELEASE_NAME) ./$(CHART_PATH) --namespace $(NAMESPACE)
 
 upgrade:
-	helm upgrade $(RELEASE_NAME) ./$(CHART_NAME) --namespace $(NAMESPACE)
+	helm upgrade $(RELEASE_NAME) ./$(CHART_PATH) --namespace $(NAMESPACE)
 
 uninstall:
 	helm uninstall $(RELEASE_NAME) --namespace $(NAMESPACE)
 
-values:
-	helm show values ./$(CHART_NAME)
-
+# Добавим команду для отладки
 dry-run:
-	helm install $(RELEASE_NAME) ./$(CHART_NAME) --namespace $(NAMESPACE) --dry-run --debug
+	helm install $(RELEASE_NAME) ./$(CHART_PATH) --namespace $(NAMESPACE) --dry-run --debug
 
-dependency-update:
-	helm dependency update ./$(CHART_NAME)
+# Показать values
+values:
+	helm show values ./$(CHART_PATH)
