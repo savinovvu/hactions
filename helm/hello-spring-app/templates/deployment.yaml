@@ -1,0 +1,116 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "hello-spring-app.fullname" . }}
+  labels:
+    {{- include "hello-spring-app.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "hello-spring-app.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "hello-spring-app.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "hello-spring-app.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.spring.app.port }}
+              protocol: TCP
+          env:
+            - name: SPRING_APPLICATION_NAME
+              value: "{{ .Values.spring.app.name }}"
+            - name: SPRING_PROFILES_ACTIVE
+              value: "{{ .Values.spring.profiles }}"
+            - name: SERVER_PORT
+              value: "{{ .Values.spring.app.port }}"
+            - name: JAVA_OPTS
+              value: "-Xmx512m -Xms256m -XX:+UseG1GC"
+            {{- if .Values.spring.config.import }}
+            - name: SPRING_CONFIG_IMPORT
+              value: "{{ .Values.spring.config.import }}"
+            {{- end }}
+            {{- if .Values.spring.cloud.kubernetes.enabled }}
+            - name: SPRING_CLOUD_KUBERNETES_ENABLED
+              value: "{{ .Values.spring.cloud.kubernetes.enabled }}"
+            {{- end }}
+            {{- if .Values.spring.datasource.url }}
+            - name: SPRING_DATASOURCE_URL
+              value: "{{ .Values.spring.datasource.url }}"
+            {{- end }}
+            {{- if .Values.spring.datasource.username }}
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "hello-spring-app.fullname" . }}-db-secret
+                  key: username
+            {{- end }}
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "hello-spring-app.fullname" . }}-db-secret
+                  key: password
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.management.endpoints.web.base-path }}/health/liveness
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.management.endpoints.web.base-path }}/health/readiness
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            failureThreshold: 3
+          startupProbe:
+            httpGet:
+              path: {{ .Values.management.endpoints.web.base-path }}/health/startup
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 30
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /workspace/config
+            - name: tmp-volume
+              mountPath: /tmp
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "hello-spring-app.fullname" . }}-config
+        - name: tmp-volume
+          emptyDir: {}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
