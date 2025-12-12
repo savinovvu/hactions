@@ -2,7 +2,7 @@
 replicaCount: 2
 
 image:
-  repository: ${IMAGE_NAME}
+  repository: "ghcr.io/savinovvu/hactions/hactions:master-f65c048"
   pullPolicy: IfNotPresent
   tag: "latest"
 
