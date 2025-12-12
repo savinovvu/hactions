@@ -5,72 +5,7 @@ metadata:
   labels:
     {{- include "hello-spring-app.labels" . | nindent 4 }}
 data:
-  application.yaml: |
-    server:
-      port: {{ .Values.spring.app.port }}
-      servlet:
-        context-path: /
-
-    spring:
-      application:
-        name: {{ .Values.spring.app.name }}
-
-      profiles:
-        active: {{ .Values.spring.profiles }}
-
-      {{- if .Values.spring.datasource.url }}
-      datasource:
-        url: {{ .Values.spring.datasource.url }}
-        username: ${SPRING_DATASOURCE_USERNAME}
-        password: ${SPRING_DATASOURCE_PASSWORD}
-        driver-class-name: {{ .Values.spring.datasource.driverClassName }}
-        hikari:
-          connection-timeout: 30000
-          maximum-pool-size: 10
-      {{- end }}
-
-      {{- if .Values.spring.jpa.hibernate }}
-      jpa:
-        hibernate:
-          ddl-auto: {{ .Values.spring.jpa.hibernate.ddl-auto }}
-        show-sql: {{ .Values.spring.jpa.show-sql }}
-        properties:
-          hibernate:
-            dialect: org.hibernate.dialect.PostgreSQLDialect
-            jdbc:
-              batch_size: 20
-      {{- end }}
-
-      {{- if .Values.spring.redis.host }}
-      redis:
-        host: {{ .Values.spring.redis.host }}
-        port: {{ .Values.spring.redis.port }}
-        timeout: 2000ms
-      {{- end }}
-
-    management:
-      endpoints:
-        web:
-          exposure:
-            include: {{ .Values.management.endpoints.web.exposure.include }}
-          base-path: {{ .Values.management.endpoints.web.base-path }}
-      endpoint:
-        health:
-          show-details: {{ .Values.management.endpoint.health.show-details }}
-          probes:
-            enabled: {{ .Values.management.endpoint.health.probes.enabled }}
-
-    logging:
-      level:
-        root: INFO
-        org.springframework.web: INFO
-        com.example: DEBUG
-      pattern:
-        console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
-        file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-
-    info:
-      app:
-        name: {{ .Values.spring.app.name }}
-        version: {{ .Chart.AppVersion }}
-        description: {{ .Chart.Description }}
+  application.properties: |
+    server.port={{ .Values.app.port }}
+    spring.application.name={{ .Values.app.name }}
+    greeting.message=Hello from Spring Boot!
