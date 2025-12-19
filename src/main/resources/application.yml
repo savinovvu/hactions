@@ -1,1 +1,21 @@
-spring.application.name=hactions
+spring.application.name: hactions
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,metrics"
+      base-path: /actuator
+  endpoint:
+    health:
+      # ???????? ????????? probes ??? Kubernetes
+      probes:
+        enabled: true
+      show-details: always
+      # ??????????? ?????? ????????
+      group:
+        readiness:
+          include: "readinessState"
+        liveness:
+          include: "livenessState"

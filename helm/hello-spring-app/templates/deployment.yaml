@@ -26,17 +26,17 @@ spec:
               value: "{{ .Values.app.name }}"
             - name: SERVER_PORT
               value: "{{ .Values.app.port }}"
-#           livenessProbe:
-#             httpGet:
-#               path: {{ .Values.livenessProbe.path }}
-#               port: {{ .Values.app.port }}
-#             initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
-#             periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
-#           readinessProbe:
-#             httpGet:
-#               path: {{ .Values.readinessProbe.path }}
-#               port: {{ .Values.app.port }}
-#             initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
-#             periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+          livenessProbe:
+            path: /actuator/health/liveness
+            initialDelaySeconds: 5
+            periodSeconds: 2
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            path: /actuator/health/readiness
+            initialDelaySeconds: 5
+            periodSeconds: 2
+            timeoutSeconds: 5
+            failureThreshold: 3
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
