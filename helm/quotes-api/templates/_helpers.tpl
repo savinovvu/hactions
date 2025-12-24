@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "hello-spring-app.name" -}}
+{{- define "quotes-api.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "hello-spring-app.fullname" -}}
+{{- define "quotes-api.fullname" -}}
 {{- if .Values.fullnameOverride -}}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "hello-spring-app.chart" -}}
+{{- define "quotes-api.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
 Common labels
 */}}
-{{- define "hello-spring-app.labels" -}}
-helm.sh/chart: {{ include "hello-spring-app.chart" . }}
-{{ include "hello-spring-app.selectorLabels" . }}
+{{- define "quotes-api.labels" -}}
+helm.sh/chart: {{ include "quotes-api.chart" . }}
+{{ include "quotes-api.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,17 +45,17 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "hello-spring-app.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "hello-spring-app.name" . }}
+{{- define "quotes-api.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "quotes-api.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "hello-spring-app.serviceAccountName" -}}
+{{- define "quotes-api.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create -}}
-    {{ default (include "hello-spring-app.fullname" .) .Values.serviceAccount.name }}
+    {{ default (include "quotes-api.fullname" .) .Values.serviceAccount.name }}
 {{- else -}}
     {{ default "default" .Values.serviceAccount.name }}
 {{- end -}}
@@ -64,7 +64,7 @@ Create the name of the service account to use
 {{/*
 Generate database URL
 */}}
-{{- define "hello-spring-app.databaseUrl" -}}
+{{- define "quotes-api.databaseUrl" -}}
 {{- if .Values.postgresql.enabled -}}
 jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/{{ .Values.postgresql.auth.database }}
 {{- else -}}

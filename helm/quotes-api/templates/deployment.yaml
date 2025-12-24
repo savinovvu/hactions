@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "hello-spring-app.fullname" . }}
+  name: {{ include "quotes-api.fullname" . }}
   labels:
-    {{- include "hello-spring-app.labels" . | nindent 4 }}
+    {{- include "quotes-api.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "hello-spring-app.selectorLabels" . | nindent 6 }}
+      {{- include "quotes-api.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "hello-spring-app.selectorLabels" . | nindent 8 }}
+        {{- include "quotes-api.selectorLabels" . | nindent 8 }}
     spec:
       containers:
         - name: {{ .Chart.Name }}

@@ -1,4 +1,4 @@
-Приложение {{ .Chart.Name }} установлено в неймспейс {{ .Release.Namespace }} как {{ include "hello-spring-app.fullname" . }}.
+Приложение {{ .Chart.Name }} установлено в неймспейс {{ .Release.Namespace }} как {{ include "quotes-api.fullname" . }}.
   ⚡️ Версия чарта: {{ .Chart.Version }}
   ⚡️ Версия образа: {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
   ⚡️ Версия приложения: {{ .Chart.AppVersion }}
@@ -7,5 +7,5 @@
 {{- if .Values.ingress.enabled }}
   🌏 http://{{ .Values.ingress.host }}
 {{- else }}
-  ⚡️ kubectl port-forward service/{{ include "hello-spring-app.fullname" . }} http
+  ⚡️ kubectl port-forward service/{{ include "quotes-api.fullname" . }} http
 {{- end }}

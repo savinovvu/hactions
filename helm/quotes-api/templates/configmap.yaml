@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "hello-spring-app.fullname" . }}-config
+  name: {{ include "quotes-api.fullname" . }}-config
   labels:
-    {{- include "hello-spring-app.labels" . | nindent 4 }}
+    {{- include "quotes-api.labels" . | nindent 4 }}
 data:
   application.properties: |
     server.port={{ .Values.app.port }}
