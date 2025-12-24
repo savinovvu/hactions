@@ -11,6 +11,7 @@ RUN ./gradlew build -x test
 # Runtime stage
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
+RUN apk add --no-cache curl
 COPY --from=builder /app/build/libs/*.jar app.jar
 RUN addgroup -S spring && adduser -S spring -G spring
 USER spring

@@ -27,16 +27,16 @@ spec:
             - name: SERVER_PORT
               value: "{{ .Values.app.port }}"
           livenessProbe:
-            path: /actuator/health/liveness
-            initialDelaySeconds: 5
-            periodSeconds: 2
-            timeoutSeconds: 5
-            failureThreshold: 3
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
           readinessProbe:
-            path: /actuator/health/readiness
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
             initialDelaySeconds: 5
-            periodSeconds: 2
-            timeoutSeconds: 5
-            failureThreshold: 3
+            periodSeconds: 5
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
