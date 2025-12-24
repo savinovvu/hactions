@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: ghcr.io/savinovvu/hactions/hactions
-  tag: master-33ba2a9
+  tag: master-4d04952
   pullPolicy: IfNotPresent
 
 app:
